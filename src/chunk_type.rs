@@ -4,7 +4,7 @@ use anyhow::{bail, Error};
 
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html
 #[derive(Debug, PartialEq, Eq)]
-struct ChunkType {
+pub struct ChunkType {
     ancillary_byte: u8,
     private_byte: u8,
     reserved_byte: u8,
@@ -12,7 +12,7 @@ struct ChunkType {
 }
 
 impl ChunkType {
-    fn bytes(&self) -> [u8; 4] {
+    pub fn bytes(&self) -> [u8; 4] {
         [
             self.ancillary_byte,
             self.private_byte,
@@ -21,23 +21,23 @@ impl ChunkType {
         ]
     }
 
-    fn is_valid(&self) -> bool {
+    pub fn is_valid(&self) -> bool {
         self.bytes().iter().all(|byte| byte.is_ascii_alphabetic()) && self.is_reserved_bit_valid()
     }
 
-    fn is_critical(&self) -> bool {
+    pub fn is_critical(&self) -> bool {
         self.ancillary_byte.is_ascii_uppercase()
     }
 
-    fn is_public(&self) -> bool {
+    pub fn is_public(&self) -> bool {
         self.private_byte.is_ascii_uppercase()
     }
 
-    fn is_reserved_bit_valid(&self) -> bool {
+    pub fn is_reserved_bit_valid(&self) -> bool {
         self.reserved_byte.is_ascii_uppercase()
     }
 
-    fn is_safe_to_copy(&self) -> bool {
+    pub fn is_safe_to_copy(&self) -> bool {
         self.safe_to_copy_byte.is_ascii_lowercase()
     }
 }
