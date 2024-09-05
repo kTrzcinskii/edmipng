@@ -4,7 +4,7 @@ use crate::chunk_type::ChunkType;
 use anyhow::{bail, Context, Error, Result};
 use crc::{Crc, CRC_32_ISO_HDLC};
 
-const LENGTH_FIELD_LEN: usize = 4;
+pub(crate) const LENGTH_FIELD_LEN: usize = 4;
 const CHUNK_TYPE_FIELD_LEN: usize = 4;
 const CRC_FIELD_LEN: usize = 4;
 
@@ -49,8 +49,7 @@ impl Chunk {
     }
 
     pub fn as_bytes(&self) -> Vec<u8> {
-        let length =
-            LENGTH_FIELD_LEN + CHUNK_TYPE_FIELD_LEN + self.length() as usize + CRC_FIELD_LEN;
+        let length = Self::length_in_bytes(self.length);
 
         let mut bytes: Vec<u8> = Vec::with_capacity(length);
         bytes.extend(&self.length().to_be_bytes());
@@ -58,6 +57,10 @@ impl Chunk {
         bytes.extend(self.data());
         bytes.extend(&self.crc().to_be_bytes());
         bytes
+    }
+
+    pub fn length_in_bytes(data_length: u32) -> usize {
+        LENGTH_FIELD_LEN + CHUNK_TYPE_FIELD_LEN + data_length as usize + CRC_FIELD_LEN
     }
 
     fn calculate_crc(chunk_type: &ChunkType, data: &[u8]) -> u32 {
