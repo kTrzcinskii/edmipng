@@ -40,6 +40,10 @@ impl ChunkType {
     pub fn is_safe_to_copy(&self) -> bool {
         self.safe_to_copy_byte.is_ascii_lowercase()
     }
+
+    pub fn is_potential_message(&self) -> bool {
+        self.is_valid() && !self.is_critical() && !self.is_public()
+    }
 }
 
 impl TryFrom<[u8; 4]> for ChunkType {

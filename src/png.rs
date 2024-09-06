@@ -113,10 +113,14 @@ impl TryFrom<&[u8]> for Png {
     }
 }
 
-// TODO: finish it
 impl Display for Png {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "PNG")
+        for chunk in self.chunks() {
+            if chunk.chunk_type().is_potential_message() {
+                writeln!(f, "{}", chunk.chunk_type())?;
+            }
+        }
+        Ok(())
     }
 }
 
