@@ -24,34 +24,36 @@ pub enum Command {
 
 #[derive(Debug, Args)]
 pub struct EncodeArgs {
-    /// Path to png file
-    pub path: PathBuf,
+    /// Path to local png file / url to external png file
+    pub source: String,
     /// Chunk type of the chunk to be created in which message will be encoded
     pub chunk_type: String,
     /// Message to be encoded inside the chunk
     pub message: String,
-    /// Path to output file (if not provided, changes are made to the source file)
+    /// Path to output file (if not provided, depending on the source of the file, changes are made to the source file or new file is automatically created)
     pub output_file: Option<PathBuf>,
 }
 
 #[derive(Debug, Args)]
 pub struct DecodeArgs {
-    /// Path to png file
-    pub path: PathBuf,
+    /// Path to local png file / url to external png file
+    pub source: String,
     /// Chunk type of the chunk containg message to decode
     pub chunk_type: String,
 }
 
 #[derive(Debug, Args)]
 pub struct RemoveArgs {
-    /// Path to png file
-    pub path: PathBuf,
+    /// Path to local png file / url to external png file
+    pub source: String,
     /// Chunk type of the chunk to be removed
     pub chunk_type: String,
+    /// Path to output file (if not provided, depending on the source of the file, changes are made to the source file or new file is automatically created)
+    pub output_file: Option<PathBuf>,
 }
 
 #[derive(Debug, Args)]
 pub struct PrintArgs {
-    /// Path to png file
-    pub path: PathBuf,
+    /// Path to local png file / url to external png file
+    pub source: String,
 }

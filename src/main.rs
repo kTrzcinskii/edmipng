@@ -7,6 +7,7 @@ mod chunk;
 mod chunk_type;
 mod commands;
 mod png;
+mod source;
 
 fn main() -> Result<()> {
     let args = EdmiArgs::parse();

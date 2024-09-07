@@ -5,6 +5,7 @@ use anyhow::{bail, Context, Error, Result};
 use crate::{
     chunk::{Chunk, LENGTH_FIELD_LEN},
     chunk_type::ChunkType,
+    source::Source,
 };
 
 pub struct Png {
@@ -118,6 +119,18 @@ impl TryFrom<&[u8]> for Png {
         }
 
         Ok(Png::from_chunks(chunks))
+    }
+}
+
+impl TryFrom<&Source> for Png {
+    type Error = Error;
+
+    fn try_from(value: &Source) -> std::result::Result<Self, Self::Error> {
+        match value {
+            Source::Path(path) => Png::from_file(path),
+            // TODO: use reqwest to load it via http
+            Source::Url(_) => todo!(),
+        }
     }
 }
 
