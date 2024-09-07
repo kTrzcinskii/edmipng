@@ -10,8 +10,7 @@ use crate::{
 };
 
 pub fn encode(arguments: EncodeArgs) -> Result<()> {
-    let file = fs::read(arguments.path.clone()).context("Couldn't load file.")?;
-    let mut png = Png::try_from(file.as_slice()).context("Coulnd't parse png file.")?;
+    let mut png = Png::from_file(arguments.path.clone())?;
 
     let chunk_type =
         ChunkType::from_str(&arguments.chunk_type).context("Coulnd't parse chunk type.")?;
@@ -25,8 +24,7 @@ pub fn encode(arguments: EncodeArgs) -> Result<()> {
 }
 
 pub fn decode(arguments: DecodeArgs) -> Result<()> {
-    let file = fs::read(arguments.path).context("Couldn't load file.")?;
-    let png = Png::try_from(file.as_slice()).context("Coulnd't parse png file.")?;
+    let png = Png::from_file(arguments.path)?;
 
     let chunk = png.chunk_by_type(&arguments.chunk_type);
 
@@ -46,8 +44,7 @@ pub fn decode(arguments: DecodeArgs) -> Result<()> {
 }
 
 pub fn remove(arguments: RemoveArgs) -> Result<()> {
-    let file = fs::read(arguments.path.clone()).context("Couldn't load file.")?;
-    let mut png = Png::try_from(file.as_slice()).context("Coulnd't parse png file.")?;
+    let mut png = Png::from_file(arguments.path.clone())?;
 
     png.remove_first_chunk(&arguments.chunk_type)
         .context("Couldn't remove chunk")?;
@@ -57,8 +54,7 @@ pub fn remove(arguments: RemoveArgs) -> Result<()> {
 }
 
 pub fn print(arguments: PrintArgs) -> Result<()> {
-    let file = fs::read(arguments.path).context("Couldn't load file.")?;
-    let png = Png::try_from(file.as_slice()).context("Coulnd't parse png file.")?;
+    let png = Png::from_file(arguments.path)?;
     println!("Special chunk types inside file (private + ancillary):");
     println!("{}", png);
     Ok(())

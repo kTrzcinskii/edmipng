@@ -1,6 +1,6 @@
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, fs, path::Path, str::FromStr};
 
-use anyhow::{bail, Error, Result};
+use anyhow::{bail, Context, Error, Result};
 
 use crate::{
     chunk::{Chunk, LENGTH_FIELD_LEN},
@@ -21,6 +21,14 @@ impl Png {
             signature: Png::STANDARD_HEADER,
             chunks,
         }
+    }
+
+    pub fn from_file<P>(file_path: P) -> Result<Png>
+    where
+        P: AsRef<Path>,
+    {
+        let file = fs::read(file_path).context("Couldn't load file.")?;
+        Png::try_from(file.as_slice()).context("Coulnd't parse png file.")
     }
 
     pub fn append_chunk(&mut self, chunk: Chunk) {
