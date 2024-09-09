@@ -19,6 +19,8 @@ There are 4 commands available in edmipng:
 
 To decide whether provided source is `<input file>` or `<url>` the simplest method is used - we firstly check if it points to any exisitng file. If so, we decide that it must be a path. Otherwise we try to convert it into `url`.
 
+When file is automatically created (meaning `[output file]` is not provided) and source is `<url>` (both in `encode` and `remove`) you can manually set directory in which the file should be created by providing environment variable `EDMIPNG_DIR`.
+
 ## Example
 Let's say you have file `my_beautful_cat.png`.
 

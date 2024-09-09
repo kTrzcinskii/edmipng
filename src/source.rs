@@ -1,4 +1,5 @@
 use std::{
+    env, fs,
     path::PathBuf,
     str::FromStr,
     time::{SystemTime, UNIX_EPOCH},
@@ -13,14 +14,17 @@ pub enum Source {
 }
 
 impl Source {
+    const DIRECTORY_ENV_KEY: &'static str = "EDMIPNG_DIR";
+    const DEFAULT_FILE_NAME: &'static str = "png_file";
+
     /// If source is path just returns it, otherwise return path to non-existing file with name based on url and date
     pub fn get_output_file_path(&self) -> Result<PathBuf> {
         match self {
             Source::Path(path) => Ok(path.clone()),
             Source::Url(url) => {
                 let url_name = match url.path_segments() {
-                    Some(segments) => segments.last().unwrap_or("png_file"),
-                    None => "png_file",
+                    Some(segments) => segments.last().unwrap_or(Source::DEFAULT_FILE_NAME),
+                    None => Source::DEFAULT_FILE_NAME,
                 };
                 let without_png_suffix = url_name.strip_suffix(".png").unwrap_or(url_name);
                 let current_time = SystemTime::now();
@@ -28,9 +32,19 @@ impl Source {
                     .duration_since(UNIX_EPOCH)?
                     .as_secs()
                     .to_string();
-                // TODO: For now just filename, later add directory which can be set in env
+
+                let directory = env::var(Source::DIRECTORY_ENV_KEY);
                 let full_name = format!("{}_{}.png", without_png_suffix, epoch_time);
-                let path = PathBuf::from_str(&full_name)?;
+
+                let path = match directory {
+                    Ok(directory) => {
+                        let dir_path = PathBuf::from_str(&directory)?;
+                        fs::create_dir_all(dir_path.clone())?;
+                        dir_path.join(full_name)
+                    }
+                    Err(_) => PathBuf::from_str(&full_name)?,
+                };
+
                 Ok(path)
             }
         }
