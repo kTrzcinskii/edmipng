@@ -21,7 +21,7 @@ pub fn encode(arguments: EncodeArgs) -> Result<()> {
 
     let output_path = arguments
         .output_file
-        .unwrap_or(source.get_output_file_path().clone());
+        .unwrap_or(source.get_output_file_path()?);
     fs::write(output_path, png.as_bytes()).context("Couldn't write to png file.")?;
 
     Ok(())
@@ -57,7 +57,7 @@ pub fn remove(arguments: RemoveArgs) -> Result<()> {
 
     let output_path = arguments
         .output_file
-        .unwrap_or(source.get_output_file_path().clone());
+        .unwrap_or(source.get_output_file_path()?);
     fs::write(output_path, png.as_bytes()).context("Couldn't write to png file")?;
 
     Ok(())

@@ -1,6 +1,7 @@
 use std::{fmt::Display, fs, path::Path, str::FromStr};
 
 use anyhow::{bail, Context, Error, Result};
+use reqwest::{blocking, IntoUrl};
 
 use crate::{
     chunk::{Chunk, LENGTH_FIELD_LEN},
@@ -30,6 +31,12 @@ impl Png {
     {
         let file = fs::read(file_path).context("Couldn't load file.")?;
         Png::try_from(file.as_slice()).context("Coulnd't parse png file.")
+    }
+
+    pub fn from_url<T: IntoUrl>(url: T) -> Result<Png> {
+        let png_response = blocking::get(url)?;
+        let png_bytes: Vec<u8> = png_response.bytes()?.iter().copied().collect();
+        Png::try_from(png_bytes.as_slice())
     }
 
     pub fn append_chunk(&mut self, chunk: Chunk) {
@@ -128,8 +135,7 @@ impl TryFrom<&Source> for Png {
     fn try_from(value: &Source) -> std::result::Result<Self, Self::Error> {
         match value {
             Source::Path(path) => Png::from_file(path),
-            // TODO: use reqwest to load it via http
-            Source::Url(_) => todo!(),
+            Source::Url(url) => Png::from_url(url.clone()),
         }
     }
 }
